@@ -29,9 +29,9 @@ def main_menu_keyboard() -> ReplyKeyboardMarkup:
 
 def cotton_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.button(text="🌿 ICE Фьючерс", callback_data=MarketCB(action="ice"))
+    builder.button(text="🌿 ICE Fyuchers", callback_data=MarketCB(action="ice"))
     builder.button(text="📊 Cotlook A", callback_data=MarketCB(action="cotlook"))
-    builder.button(text="🔄 Обновить", callback_data=MarketCB(action="cotton_all"))
+    builder.button(text="🔄 Yangilash", callback_data=MarketCB(action="cotton_all"))
     builder.adjust(2, 1)
     return builder.as_markup()
 

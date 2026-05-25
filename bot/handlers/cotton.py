@@ -101,14 +101,14 @@ async def _send_cotton_all(target, edit: bool = False) -> None:
 
 @router.message(Command("ice"))
 async def cmd_ice(message: Message) -> None:
-    await message.answer("⏳ Загружаю фьючерсы ICE...")
+    await message.answer("⏳ ICE fyuchers ma'lumotlari yuklanmoqda...")
     uzs_rate = await get_uzs_rate()
     await _send_ice(message, uzs_rate)
 
 
 @router.message(Command("cotlook"))
 async def cmd_cotlook(message: Message) -> None:
-    await message.answer("⏳ Загружаю индекс Cotlook A...")
+    await message.answer("⏳ Cotlook A indeksi yuklanmoqda...")
     uzs_rate = await get_uzs_rate()
     ice_data = await ice_cotton.fetch_ice_cotton()
     ice_price = (ice_data["price"] if ice_data
@@ -120,14 +120,14 @@ async def cmd_cotlook(message: Message) -> None:
 
 @router.callback_query(MarketCB.filter(F.action == "ice"))
 async def cb_ice(query: CallbackQuery, callback_data: MarketCB) -> None:
-    await query.answer("Обновляю ICE...")
+    await query.answer("ICE ma'lumotlari yangilanmoqda...")
     uzs_rate = await get_uzs_rate()
     await _send_ice(query, uzs_rate, edit=True)
 
 
 @router.callback_query(MarketCB.filter(F.action == "cotlook"))
 async def cb_cotlook(query: CallbackQuery, callback_data: MarketCB) -> None:
-    await query.answer("Обновляю Cotlook A...")
+    await query.answer("Cotlook A yangilanmoqda...")
     uzs_rate = await get_uzs_rate()
     ice_data = await ice_cotton.fetch_ice_cotton()
     ice_price = (ice_data["price"] if ice_data
