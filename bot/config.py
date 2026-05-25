@@ -26,6 +26,20 @@ class Settings(BaseSettings):
     ALERT_COOLDOWN_MINUTES: int = 30
     HTTP_PROXY: Optional[str] = None
 
+    # === Multi-source API keys (all optional — enables the respective fetcher) ===
+    QUANDL_API_KEY: Optional[str] = None
+    USDA_API_KEY: Optional[str] = None
+    FRED_API_KEY: Optional[str] = None
+
+    # === Scraping settings ===
+    ENABLE_SCRAPING: bool = True
+    SCRAPING_TIMEOUT: int = 15
+
+    # === Consensus settings ===
+    CONSENSUS_MIN_SOURCES: int = 2
+    CONSENSUS_MAX_DEVIATION: float = 5.0   # percent; above this, confidence is penalised
+    CONSENSUS_TIMEOUT: float = 25.0        # seconds for the parallel fetch
+
     @field_validator("BOT_TOKEN")
     @classmethod
     def token_must_not_be_placeholder(cls, v: str) -> str:

@@ -16,7 +16,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message, TelegramObject
 
 from bot.config import settings
-from bot.handlers import alerts, analytics, cotton, exports, fx, general, reports, yarn
+from bot.handlers import alerts, analytics, cotton, cotton_multisource, exports, fx, general, reports, yarn
 from bot.schedulers.alert_scheduler import init_scheduler, scheduler
 from bot.state import user_last_request
 
@@ -83,7 +83,8 @@ def create_dispatcher() -> Dispatcher:
     dp.message.middleware(RateLimitMiddleware())
 
     dp.include_router(general.router)
-    dp.include_router(cotton.router)
+    dp.include_router(cotton_multisource.router)  # /cotton (multi-source) + /sources
+    dp.include_router(cotton.router)              # /ice, /cotlook, inline callbacks
     dp.include_router(yarn.router)
     dp.include_router(fx.router)
     dp.include_router(analytics.router)

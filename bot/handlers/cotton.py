@@ -97,12 +97,7 @@ async def _send_cotton_all(target, edit: bool = False) -> None:
 
 
 # ── Команды ───────────────────────────────────────────────────────────────────
-
-@router.message(Command("cotton"))
-async def cmd_cotton(message: Message) -> None:
-    await message.answer("⏳ Загружаю рынки хлопка...")
-    await _send_cotton_all(message)
-
+# NOTE: /cotton is handled by cotton_multisource router (multi-source consensus).
 
 @router.message(Command("ice"))
 async def cmd_ice(message: Message) -> None:
