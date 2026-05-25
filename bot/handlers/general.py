@@ -137,7 +137,6 @@ async def cmd_status(message: Message) -> None:
     "🌿 Хлопок", "🧵 Пряжа", "💱 USD/UZS", "📊 Аналитика", "🔔 Оповещения", "📋 Отчёты"
 ))
 async def menu_redirect(message: Message) -> None:
-    from bot.handlers.cotton import _send_cotton_all
     from bot.handlers.yarn import _send_all_yarn
     from bot.handlers.fx import _send_fx
     from bot.handlers.analytics import cmd_history
@@ -146,8 +145,8 @@ async def menu_redirect(message: Message) -> None:
 
     text = message.text
     if text == "🌿 Хлопок":
-        await message.answer("⏳ Загружаю рынки хлопка...")
-        await _send_cotton_all(message)
+        from bot.handlers.cotton_multisource import cmd_cotton_multisource
+        await cmd_cotton_multisource(message)
     elif text == "🧵 Пряжа":
         await message.answer("⏳ Загружаю рынки пряжи...")
         await _send_all_yarn(message)
