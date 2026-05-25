@@ -135,7 +135,4 @@ async def cb_cotlook(query: CallbackQuery, callback_data: MarketCB) -> None:
     await _send_cotlook(query, ice_price, uzs_rate, edit=True)
 
 
-@router.callback_query(MarketCB.filter(F.action == "cotton_all"))
-async def cb_cotton_all(query: CallbackQuery, callback_data: MarketCB) -> None:
-    await query.answer("Обновляю данные хлопка...")
-    await _send_cotton_all(query, edit=True)
+# cotton_all callback is handled by cotton_multisource router

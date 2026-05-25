@@ -6,9 +6,9 @@ from __future__ import annotations
 
 import logging
 
-from aiogram import Router
+from aiogram import F, Router
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import CallbackQuery, Message
 
 from bot.services.multisource.aggregator import ConsensusResult, PriceAggregator
 from bot.services.multisource.cotton.yahoo_v8 import YahooV8CottonFetcher
@@ -20,7 +20,7 @@ from bot.services.multisource.cotton.stooq import StooqCottonFetcher
 from bot.services.multisource.cotton.uzrtxb import UzRTXBCottonFetcher
 from bot.services.fx_service import get_uzs_rate
 from bot.utils.converters import cents_per_lb_to_usd_per_kg
-from bot.utils.keyboards import cotton_keyboard
+from bot.utils.keyboards import cotton_keyboard, MarketCB
 
 logger = logging.getLogger(__name__)
 router = Router(name="cotton_multisource")
@@ -115,14 +115,22 @@ def _format_cotton_response(result: ConsensusResult, uzs_rate: float) -> str:
     return "\n".join(lines)
 
 
+async def _fetch_and_render(uzs_rate: float | None = None) -> tuple[str, bool]:
+    """Return (text, success). uzs_rate fetched internally if not supplied."""
+    if uzs_rate is None:
+        uzs_rate = await get_uzs_rate()
+    result = await _cotton_aggregator.fetch_all(timeout=25.0)
+    return _format_cotton_response(result, uzs_rate), True
+
+
 @router.message(Command("cotton"))
 async def cmd_cotton_multisource(message: Message) -> None:
     """Fetch ICE cotton price from all configured sources and show consensus."""
     await message.answer("⏳ Barcha manbalardan ma'lumot yuklanmoqda...")
 
     try:
-        result = await _cotton_aggregator.fetch_all(timeout=25.0)
         uzs_rate = await get_uzs_rate()
+        result = await _cotton_aggregator.fetch_all(timeout=25.0)
         text = _format_cotton_response(result, uzs_rate)
         await message.answer(text, parse_mode="HTML", reply_markup=cotton_keyboard())
 
@@ -141,6 +149,27 @@ async def cmd_cotton_multisource(message: Message) -> None:
             "❌ Ichki xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.",
             reply_markup=cotton_keyboard(),
         )
+
+
+@router.callback_query(MarketCB.filter(F.action == "cotton_all"))
+async def cb_cotton_all(query: CallbackQuery, callback_data: MarketCB) -> None:
+    """'Обновить' button — re-fetch all sources and edit the existing message."""
+    await query.answer("Yangilanmoqda...")
+    try:
+        uzs_rate = await get_uzs_rate()
+        result = await _cotton_aggregator.fetch_all(timeout=25.0)
+        text = _format_cotton_response(result, uzs_rate)
+        await query.message.edit_text(text, parse_mode="HTML", reply_markup=cotton_keyboard())
+    except ValueError as exc:
+        logger.error("Cotton refresh failed: %s", exc)
+        await query.message.edit_text(
+            "⚠️ <b>Yangilab bo'lmadi</b> — barcha manbalar javob bermadi.\n\n"
+            f"<i>{exc}</i>",
+            parse_mode="HTML",
+            reply_markup=cotton_keyboard(),
+        )
+    except Exception as exc:
+        logger.error("Cotton refresh error: %s", exc, exc_info=True)
 
 
 @router.message(Command("sources"))
