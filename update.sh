@@ -71,6 +71,10 @@ BOT_TOKEN_VAL=$(grep -E "^BOT_TOKEN=" .env | cut -d= -f2- | tr -d ' ')
 ok ".env valid"
 
 mkdir -p logs
+chown -R 1000:1000 logs
+chmod 755 logs
+
+mkdir -p logs
 
 # ── 3. Build (unless --no-rebuild) ───────────────────────────────────────────
 if [[ "$NO_REBUILD" == "false" ]]; then

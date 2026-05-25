@@ -75,7 +75,10 @@ ok "BOT_TOKEN is set"
 # ── 4. Create required directories ────────────────────────────────────────────
 info "Creating directories..."
 mkdir -p logs
-ok "logs/ directory ready"
+# UID 1000 = botuser inside container (must match Dockerfile)
+chown -R 1000:1000 logs
+chmod 755 logs
+ok "logs/ directory ready (owned by botuser UID 1000)"
 
 # ── 5. Build Docker image ─────────────────────────────────────────────────────
 hr
